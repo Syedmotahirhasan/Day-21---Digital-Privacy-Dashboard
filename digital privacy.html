@@ -1,0 +1,1863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Privacy Dashboard — Syed Motahir Hasan</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&family=Syne:wght@400;700;800&display=swap');
+
+  :root {
+    --bg-primary: #080c14;
+    --bg-secondary: #0d1424;
+    --bg-card: #111827;
+    --bg-card-hover: #162032;
+    --border: rgba(99,179,237,0.12);
+    --border-bright: rgba(99,179,237,0.3);
+    --accent-cyan: #38bdf8;
+    --accent-blue: #3b82f6;
+    --accent-purple: #a855f7;
+    --accent-green: #22c55e;
+    --accent-amber: #f59e0b;
+    --accent-red: #ef4444;
+    --accent-pink: #ec4899;
+    --text-primary: #f0f6ff;
+    --text-secondary: #8da4c0;
+    --text-muted: #4d6480;
+    --glow-cyan: 0 0 30px rgba(56,189,248,0.15);
+    --glow-red: 0 0 30px rgba(239,68,68,0.15);
+    --glow-green: 0 0 30px rgba(34,197,94,0.15);
+    --glow-purple: 0 0 30px rgba(168,85,247,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(56,189,248,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(56,189,248,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { max-width: 1440px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+  /* ── HEADER ── */
+  .header {
+    padding: 40px 0 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .header-left { display: flex; align-items: center; gap: 20px; }
+
+  .avatar {
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 22px; font-weight: 800;
+    color: var(--bg-primary);
+    letter-spacing: -1px;
+    box-shadow: var(--glow-cyan);
+    flex-shrink: 0;
+  }
+
+  .header-title h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px; font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+  }
+
+  .header-title p {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent-cyan);
+    margin-top: 3px;
+    letter-spacing: 1px;
+  }
+
+  .header-badge {
+    background: rgba(239,68,68,0.12);
+    border: 1px solid rgba(239,68,68,0.3);
+    color: var(--accent-red);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    letter-spacing: 1px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .pulse {
+    width: 6px; height: 6px;
+    background: var(--accent-red);
+    border-radius: 50%;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--accent-cyan);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+    margin-bottom: 32px;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  .card:hover {
+    border-color: var(--border-bright);
+    box-shadow: var(--glow-cyan);
+  }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .card-subtitle {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── GRID LAYOUTS ── */
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .grid-12 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+  /* ── SECTION SPACING ── */
+  section { margin-bottom: 48px; }
+
+  /* ══════════════════════════════════════════
+     SECTION 1: DIGITAL FOOTPRINT SCORE
+  ══════════════════════════════════════════ */
+  .score-hero {
+    background: linear-gradient(135deg, #0d1424 0%, #12182e 100%);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 48px;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .score-hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(239,68,68,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .score-ring-wrap { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+
+  .score-ring {
+    position: relative;
+    width: 200px; height: 200px;
+  }
+
+  .score-ring svg { transform: rotate(-90deg); }
+
+  .score-ring-inner {
+    position: absolute;
+    inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 2px;
+  }
+
+  .score-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 52px;
+    font-weight: 800;
+    color: var(--accent-red);
+    line-height: 1;
+    letter-spacing: -3px;
+  }
+
+  .score-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-secondary);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .risk-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    font-weight: 500;
+  }
+
+  .risk-high { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.4); color: #ef4444; }
+  .risk-medium { background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.4); color: #f59e0b; }
+  .risk-low { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.4); color: #22c55e; }
+
+  .score-details h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+  }
+
+  .score-details p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+
+  .score-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+  .metric-mini {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+  }
+
+  .metric-mini-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 2px;
+  }
+
+  .metric-mini-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* Ring animation */
+  .ring-track { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 12; }
+  .ring-fill { fill: none; stroke-width: 12; stroke-linecap: round; stroke-dasharray: 565; stroke-dashoffset: 565; transition: stroke-dashoffset 2s cubic-bezier(0.4,0,0.2,1); }
+
+  /* ══════════════════════════════════════════
+     SECTION 2: PRIVACY SCORE ANALYSIS
+  ══════════════════════════════════════════ */
+  .privacy-card { padding: 20px 28px; }
+
+  .privacy-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .privacy-row:last-child { border-bottom: none; }
+
+  .privacy-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .privacy-info { flex: 1; }
+
+  .privacy-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+  }
+
+  .privacy-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+  }
+
+  .privacy-score-wrap { display: flex; align-items: center; gap: 12px; min-width: 140px; }
+
+  .bar-track {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1.5s cubic-bezier(0.4,0,0.2,1);
+    width: 0;
+  }
+
+  .privacy-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    min-width: 30px;
+    text-align: right;
+  }
+
+  /* ══════════════════════════════════════════
+     SECTION 3: EXPOSURE HEATMAP
+  ══════════════════════════════════════════ */
+  .heatmap-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .heatmap-platform {
+    border-radius: 10px;
+    padding: 12px 8px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .heatmap-platform:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+
+  .heatmap-icon { font-size: 22px; margin-bottom: 6px; }
+
+  .heatmap-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .heatmap-pct {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .heat-critical { background: rgba(239,68,68,0.18); border: 1px solid rgba(239,68,68,0.35); }
+  .heat-high { background: rgba(249,115,22,0.18); border: 1px solid rgba(249,115,22,0.35); }
+  .heat-medium { background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); }
+  .heat-low { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25); }
+
+  .data-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .data-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ══════════════════════════════════════════
+     SECTION 4: COMPANY EXPOSURE RANKING
+  ══════════════════════════════════════════ */
+  .company-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.2s;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .company-row:last-child { border-bottom: none; }
+  .company-row:hover { background: rgba(255,255,255,0.02); }
+
+  .rank-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text-muted);
+    min-width: 24px;
+    text-align: center;
+  }
+
+  .company-logo {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .company-info { flex: 1; }
+
+  .company-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .company-data {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.3px;
+  }
+
+  .company-score {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    min-width: 44px;
+    text-align: right;
+  }
+
+  .company-bar {
+    width: 100px;
+    height: 4px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .company-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 1.5s ease;
+    width: 0;
+  }
+
+  /* ══════════════════════════════════════════
+     SECTION 5: DIGITAL TWIN
+  ══════════════════════════════════════════ */
+  .twin-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .twin-category {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+  }
+
+  .twin-cat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent-cyan);
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .twin-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    font-size: 12px;
+  }
+
+  .twin-item:last-child { border-bottom: none; }
+
+  .twin-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+
+  .twin-key { color: var(--text-secondary); min-width: 110px; font-size: 11px; }
+
+  .twin-val {
+    color: var(--text-primary);
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  /* ══════════════════════════════════════════
+     SECTION 6: RISK RADAR
+  ══════════════════════════════════════════ */
+  .radar-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 24px;
+    padding: 20px 0;
+  }
+
+  .radar-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .legend-item {
+    display: flex; align-items: center; gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+  }
+
+  .legend-dot { width: 8px; height: 8px; border-radius: 2px; }
+
+  /* ══════════════════════════════════════════
+     SECTION 7: MOST VALUABLE DATA ASSETS
+  ══════════════════════════════════════════ */
+  .asset-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.2s;
+    cursor: default;
+  }
+
+  .asset-card:hover {
+    border-color: var(--border-bright);
+    background: rgba(255,255,255,0.04);
+    transform: translateX(4px);
+  }
+
+  .asset-rank {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: rgba(255,255,255,0.08);
+    min-width: 28px;
+    line-height: 1;
+  }
+
+  .asset-icon {
+    font-size: 24px;
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
+
+  .asset-info { flex: 1; }
+
+  .asset-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+
+  .asset-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.3px;
+  }
+
+  .asset-value {
+    text-align: right;
+  }
+
+  .asset-price {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--accent-green);
+  }
+
+  .asset-unit {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* ══════════════════════════════════════════
+     SECTION 8: PRIVACY IMPROVEMENT SIMULATOR
+  ══════════════════════════════════════════ */
+  .simulator-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  .action-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .action-item:last-child { border-bottom: none; }
+
+  .action-checkbox {
+    width: 18px; height: 18px;
+    border: 2px solid var(--border-bright);
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .action-checkbox.checked {
+    background: var(--accent-green);
+    border-color: var(--accent-green);
+  }
+
+  .action-checkbox.checked::after { content: '✓'; color: white; font-size: 10px; font-weight: 700; }
+
+  .action-info { flex: 1; }
+
+  .action-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+  }
+
+  .action-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.3px;
+    margin-bottom: 4px;
+  }
+
+  .action-boost {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accent-green);
+    font-weight: 500;
+  }
+
+  .sim-score-card {
+    background: linear-gradient(135deg, rgba(34,197,94,0.05), rgba(56,189,248,0.05));
+    border: 1px solid rgba(34,197,94,0.2);
+    border-radius: 16px;
+    padding: 28px;
+    text-align: center;
+    position: sticky;
+    top: 20px;
+  }
+
+  .sim-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .sim-before-after {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .sim-val {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    letter-spacing: -2px;
+  }
+
+  .sim-val.before { font-size: 40px; color: var(--accent-red); }
+  .sim-val.after { font-size: 40px; color: var(--accent-green); }
+
+  .sim-arrow {
+    font-size: 20px;
+    color: var(--text-muted);
+  }
+
+  .sim-boost-total {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent-green);
+    background: rgba(34,197,94,0.1);
+    border: 1px solid rgba(34,197,94,0.2);
+    border-radius: 6px;
+    padding: 8px 16px;
+    margin-bottom: 20px;
+  }
+
+  .sim-meter {
+    height: 8px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  .sim-meter-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--accent-red), var(--accent-amber), var(--accent-green));
+    transition: width 0.5s ease;
+  }
+
+  .sim-meter-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+  }
+
+  /* ══════════════════════════════════════════
+     SECTION 9: FINAL VERDICT
+  ══════════════════════════════════════════ */
+  .verdict-hero {
+    background: linear-gradient(135deg, rgba(239,68,68,0.06), rgba(245,158,11,0.04));
+    border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 20px;
+    padding: 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .verdict-hero::before {
+    content: '';
+    position: absolute;
+    bottom: -60px; right: -60px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%);
+  }
+
+  .verdict-grade {
+    font-family: 'Syne', sans-serif;
+    font-size: 72px;
+    font-weight: 800;
+    color: var(--accent-red);
+    line-height: 1;
+    letter-spacing: -4px;
+    margin-bottom: 8px;
+  }
+
+  .verdict-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+  }
+
+  .verdict-desc {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.7;
+    max-width: 600px;
+  }
+
+  .actions-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .action-tile {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 14px;
+    text-align: center;
+    transition: all 0.2s;
+    cursor: default;
+  }
+
+  .action-tile:hover {
+    border-color: var(--border-bright);
+    transform: translateY(-2px);
+    box-shadow: var(--glow-cyan);
+  }
+
+  .action-tile-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: rgba(255,255,255,0.06);
+    margin-bottom: 4px;
+  }
+
+  .action-tile-icon { font-size: 20px; margin-bottom: 8px; }
+
+  .action-tile-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+
+  .action-tile-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.5px;
+  }
+
+  .longterm-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+
+  .longterm-item {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .longterm-icon { font-size: 20px; margin-bottom: 8px; }
+
+  .longterm-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+
+  .longterm-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.3px;
+    line-height: 1.6;
+  }
+
+  /* ── TABS ── */
+  .tab-bar {
+    display: flex;
+    gap: 4px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 20px;
+    width: fit-content;
+  }
+
+  .tab-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    padding: 6px 16px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+  }
+
+  .tab-btn.active {
+    background: var(--accent-cyan);
+    color: var(--bg-primary);
+    font-weight: 600;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    border-top: 1px solid var(--border);
+    padding: 28px 0;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .footer-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+  }
+
+  .footer-badge {
+    background: rgba(56,189,248,0.08);
+    border: 1px solid rgba(56,189,248,0.15);
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accent-cyan);
+    letter-spacing: 1px;
+  }
+
+  /* ── UTILITY ── */
+  .text-red { color: var(--accent-red); }
+  .text-amber { color: var(--accent-amber); }
+  .text-green { color: var(--accent-green); }
+  .text-cyan { color: var(--accent-cyan); }
+  .text-purple { color: var(--accent-purple); }
+  .text-blue { color: var(--accent-blue); }
+
+  .divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .score-hero { grid-template-columns: 1fr; }
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .heatmap-grid { grid-template-columns: repeat(4, 1fr); }
+    .actions-grid { grid-template-columns: repeat(3, 1fr); }
+    .longterm-grid { grid-template-columns: 1fr 1fr; }
+    .simulator-layout { grid-template-columns: 1fr; }
+    .twin-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 600px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .actions-grid { grid-template-columns: 1fr 1fr; }
+    .heatmap-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  /* Tooltip */
+  [data-tip] { position: relative; cursor: help; }
+  [data-tip]::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1e2a3a;
+    border: 1px solid var(--border-bright);
+    color: var(--text-primary);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 10;
+    letter-spacing: 0.3px;
+  }
+  [data-tip]:hover::after { opacity: 1; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg-primary); }
+  ::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 3px; }
+
+  /* Animate in */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .card, section > * { animation: fadeUp 0.5s ease both; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <div class="avatar">SMH</div>
+      <div class="header-title">
+        <h1>Syed Motahir Hasan</h1>
+        <p>▸ MCA Final Year · Gorakhpur, UP · Digital Privacy Report</p>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+      <div class="header-badge">
+        <span class="pulse"></span>
+        LIVE ANALYSIS · JUNE 2025
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:1px;">
+        Report ID: SMH-2025-0629
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════ SECTION 1: DIGITAL FOOTPRINT SCORE ══════════ -->
+  <section id="s1">
+    <div class="section-label">01 / DIGITAL FOOTPRINT</div>
+    <div class="section-title">Your Privacy Score</div>
+
+    <div class="score-hero">
+      <div class="score-ring-wrap">
+        <div class="score-ring">
+          <svg width="200" height="200" viewBox="0 0 200 200">
+            <circle class="ring-track" cx="100" cy="100" r="82"/>
+            <circle class="ring-fill" id="mainRingFill" cx="100" cy="100" r="82" stroke="#ef4444"/>
+          </svg>
+          <div class="score-ring-inner">
+            <div class="score-number" id="mainScore">0</div>
+            <div class="score-label">/ 100</div>
+          </div>
+        </div>
+        <div class="risk-badge risk-high" id="riskBadge">⚠ HIGH RISK EXPOSURE</div>
+      </div>
+
+      <div class="score-details">
+        <h2>Critically Exposed Digital Profile</h2>
+        <p>Your digital footprint is dangerously large for your age and profession. With 7+ active platforms, a public GitHub, active banking apps, and daily WhatsApp usage, your data is spread across dozens of corporations worldwide. As an MCA student in tech, you're at <strong style="color:var(--accent-amber)">higher risk</strong> of targeted phishing, credential stuffing, and identity theft.</p>
+
+        <div class="score-metrics">
+          <div class="metric-mini">
+            <div class="metric-mini-val text-red">34</div>
+            <div class="metric-mini-label">Privacy Score</div>
+          </div>
+          <div class="metric-mini">
+            <div class="metric-mini-val text-amber">7+</div>
+            <div class="metric-mini-label">Platforms</div>
+          </div>
+          <div class="metric-mini">
+            <div class="metric-mini-val text-purple">2,400+</div>
+            <div class="metric-mini-label">Data Points</div>
+          </div>
+          <div class="metric-mini">
+            <div class="metric-mini-val text-cyan">₹4,800</div>
+            <div class="metric-mini-label">Data Worth/yr</div>
+          </div>
+          <div class="metric-mini">
+            <div class="metric-mini-val text-red">12</div>
+            <div class="metric-mini-label">Critical Risks</div>
+          </div>
+          <div class="metric-mini">
+            <div class="metric-mini-val text-green">3</div>
+            <div class="metric-mini-label">Good Habits</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ SECTION 2: PRIVACY SCORE ANALYSIS ══════════ -->
+  <section id="s2">
+    <div class="section-label">02 / ANALYSIS</div>
+    <div class="section-title">Privacy Score Breakdown</div>
+
+    <div class="grid-2" style="gap:20px;">
+
+      <div class="card">
+        <div class="card-title">📊 Risk Dimension Scores</div>
+        <div class="card-subtitle">Lower score = higher privacy exposure</div>
+
+        <div id="privacyBars"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔬 Deep Risk Analysis</div>
+        <div class="card-subtitle">Contextual threats for your profile</div>
+
+        <div style="display:flex;flex-direction:column;gap:12px;margin-top:8px;">
+
+          <div style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:14px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <span style="font-size:16px;">📧</span>
+              <span style="font-size:12px;font-weight:600;color:var(--accent-red);">Gmail — Critical Email Vulnerability</span>
+            </div>
+            <p style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);line-height:1.7;letter-spacing:0.3px;">
+              syedmahsan229@gmail.com is your primary account and recovery for all other services. A single breach cascades to banking, LinkedIn, GitHub, Instagram. High-value target for spear phishing.
+            </p>
+          </div>
+
+          <div style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:14px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <span style="font-size:16px;">💻</span>
+              <span style="font-size:12px;font-weight:600;color:var(--accent-amber);">GitHub — Code & Career Exposure</span>
+            </div>
+            <p style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);line-height:1.7;letter-spacing:0.3px;">
+              Public repositories on Syedmotahirhasan may contain API keys, .env files, or personal config data. Commit history reveals coding patterns, skill level, and project ideas.
+            </p>
+          </div>
+
+          <div style="background:rgba(168,85,247,0.07);border:1px solid rgba(168,85,247,0.2);border-radius:10px;padding:14px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <span style="font-size:16px;">🏦</span>
+              <span style="font-size:12px;font-weight:600;color:var(--accent-purple);">Banking Apps — Financial Risk</span>
+            </div>
+            <p style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);line-height:1.7;letter-spacing:0.3px;">
+              Banking apps on Android share device fingerprint, location, and behavioral data with analytics providers. UPI apps linked to phone number create identity bridges across platforms.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════ SECTION 3: EXPOSURE HEATMAP ══════════ -->
+  <section id="s3">
+    <div class="section-label">03 / EXPOSURE HEATMAP</div>
+    <div class="section-title">Platform Data Exposure Map</div>
+
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+        <div>
+          <div class="card-title">Which Platforms Know the Most About You</div>
+          <div class="card-subtitle">Based on data collection policies, daily usage & integration depth</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:9px;padding:3px 8px;border-radius:4px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#ef4444;">■ CRITICAL</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:9px;padding:3px 8px;border-radius:4px;background:rgba(249,115,22,0.15);border:1px solid rgba(249,115,22,0.3);color:#f97316;">■ HIGH</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:9px;padding:3px 8px;border-radius:4px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);color:#f59e0b;">■ MEDIUM</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:9px;padding:3px 8px;border-radius:4px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);color:#22c55e;">■ LOW</span>
+        </div>
+      </div>
+
+      <div class="heatmap-grid" id="heatmapGrid"></div>
+
+      <div class="divider"></div>
+
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--text-muted);text-transform:uppercase;margin-bottom:10px;">Data Categories Exposed Across Platforms</div>
+        <div class="data-categories" id="dataCategories"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ SECTION 4: COMPANY EXPOSURE RANKING ══════════ -->
+  <section id="s4">
+    <div class="section-label">04 / COMPANY RANKING</div>
+    <div class="section-title">Top 10 Companies With Your Data</div>
+
+    <div class="card">
+      <div class="card-title">Corporate Data Holders</div>
+      <div class="card-subtitle">Ranked by estimated data volume and sensitivity</div>
+      <div id="companyList"></div>
+    </div>
+  </section>
+
+  <!-- ══════════ SECTION 5: DIGITAL TWIN PROFILE ══════════ -->
+  <section id="s5">
+    <div class="section-label">05 / DIGITAL TWIN</div>
+    <div class="section-title">What the Internet Knows About You</div>
+
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;padding:16px;background:rgba(56,189,248,0.04);border:1px solid rgba(56,189,248,0.12);border-radius:12px;">
+        <div style="font-size:40px;">👤</div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--accent-cyan);margin-bottom:4px;">Predicted Corporate Profile: <span style="color:var(--text-primary);">Syed Motahir Hasan</span></div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);line-height:1.7;letter-spacing:0.3px;">
+            Male · Age 22 · Student (Tech) · Tier 2 City, India · Android User · Budget-conscious · Career-seeking · Tech enthusiast
+          </div>
+        </div>
+        <div style="margin-left:auto;text-align:right;">
+          <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--accent-red);">89%</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:1px;">MATCH CONFIDENCE</div>
+        </div>
+      </div>
+      <div class="twin-grid" id="twinGrid"></div>
+    </div>
+  </section>
+
+  <!-- ══════════ SECTION 6: RISK RADAR ══════════ -->
+  <section id="s6">
+    <div class="section-label">06 / RISK RADAR</div>
+    <div class="section-title">Multi-Dimensional Risk Assessment</div>
+
+    <div class="card">
+      <div class="radar-wrap">
+        <div class="card-title">Risk Category Radar Chart</div>
+        <svg id="radarChart" width="420" height="380" viewBox="0 0 420 380"></svg>
+        <div class="radar-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(239,68,68,0.7);"></div>Your Risk Level</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(56,189,248,0.4);"></div>Average Student</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(34,197,94,0.4);"></div>Safe Threshold</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ SECTION 7: MOST VALUABLE DATA ASSETS ══════════ -->
+  <section id="s7">
+    <div class="section-label">07 / DATA VALUATION</div>
+    <div class="section-title">Your Most Valuable Data Assets</div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">💰 Data Worth on the Dark Web</div>
+        <div class="card-subtitle">Estimated market value per data category</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px;" id="assetList"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📊 Data Monetization Breakdown</div>
+        <div class="card-subtitle">How companies profit from your data annually</div>
+
+        <svg id="donutChart" width="100%" height="260" viewBox="0 0 300 260"></svg>
+
+        <div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:10px;padding:14px;margin-top:12px;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:1px;margin-bottom:8px;">TOTAL ESTIMATED ANNUAL VALUE TO COMPANIES</div>
+          <div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--accent-amber);">₹4,800</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);margin-top:4px;">Per year · Across all platforms · You receive: ₹0</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ SECTION 8: PRIVACY IMPROVEMENT SIMULATOR ══════════ -->
+  <section id="s8">
+    <div class="section-label">08 / SIMULATOR</div>
+    <div class="section-title">Privacy Improvement Simulator</div>
+
+    <div class="simulator-layout">
+      <div class="card">
+        <div class="card-title">✅ Select Actions to Simulate</div>
+        <div class="card-subtitle">Click to toggle — see your score update in real time</div>
+        <div id="actionList"></div>
+      </div>
+
+      <div>
+        <div class="sim-score-card">
+          <div class="sim-label">PRIVACY SCORE PROJECTION</div>
+          <div class="sim-before-after">
+            <div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:1px;margin-bottom:4px;">CURRENT</div>
+              <div class="sim-val before">34</div>
+            </div>
+            <div class="sim-arrow">→</div>
+            <div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:1px;margin-bottom:4px;">PROJECTED</div>
+              <div class="sim-val after" id="simScore">34</div>
+            </div>
+          </div>
+
+          <div class="sim-boost-total" id="simBoost">Select actions above to improve your score</div>
+
+          <div class="sim-meter">
+            <div class="sim-meter-fill" id="simMeterFill" style="width:34%"></div>
+          </div>
+          <div class="sim-meter-labels">
+            <span>0 — CRITICAL</span>
+            <span>50 — FAIR</span>
+            <span>100 — SAFE</span>
+          </div>
+
+          <div style="margin-top:20px;display:flex;flex-direction:column;gap:8px;" id="simBreakdown">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Score Components</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ SECTION 9: FINAL VERDICT ══════════ -->
+  <section id="s9">
+    <div class="section-label">09 / FINAL VERDICT</div>
+    <div class="section-title">Privacy Health Summary</div>
+
+    <div class="verdict-hero">
+      <div style="display:flex;align-items:flex-start;gap:32px;flex-wrap:wrap;">
+        <div>
+          <div class="verdict-grade">D+</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent-red);letter-spacing:2px;margin-bottom:8px;">PRIVACY GRADE</div>
+        </div>
+        <div style="flex:1;min-width:280px;">
+          <div class="verdict-title">High-Risk Digital Exposure Detected</div>
+          <div class="verdict-desc">
+            Syed, your digital profile is critically exposed for a 22-year-old MCA student. You are actively tracked by Google, Meta, Microsoft, and dozens of data brokers. Your Gmail is a single point of failure. Your GitHub is indexed by recruiters and scrapers. Your WhatsApp metadata is shared with Meta. Immediate action is required to protect your financial data, personal identity, and career prospects. The good news — with 3–4 focused changes, you can push your score above 60 within 30 days.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--text-muted);text-transform:uppercase;margin-bottom:14px;">TOP 5 IMMEDIATE ACTIONS</div>
+    <div class="actions-grid" id="topActions"></div>
+
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--text-muted);text-transform:uppercase;margin-bottom:14px;margin-top:32px;">LONG-TERM RECOMMENDATIONS (3–12 MONTHS)</div>
+    <div class="longterm-grid" id="longtermGrid"></div>
+
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-text">
+      DIGITAL PRIVACY DASHBOARD · SMH-2025-0629 · GENERATED FOR SYED MOTAHIR HASAN · FOR EDUCATIONAL PURPOSES
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <div class="footer-badge">CYBERSEC ANALYST REPORT</div>
+      <div class="footer-badge" style="color:var(--text-muted);border-color:var(--border);background:transparent;">v2.4.1</div>
+    </div>
+  </footer>
+
+</div><!-- /container -->
+
+<script>
+/* ═══════════════════════════════════════════════════
+   DATA DEFINITIONS
+═══════════════════════════════════════════════════ */
+
+const PRIVACY_BARS = [
+  { name: 'Social Media Exposure', icon: '📱', score: 18, color: '#ef4444', desc: 'Instagram + LinkedIn + WhatsApp = heavy metadata trail' },
+  { name: 'Email Vulnerability',   icon: '📧', score: 22, color: '#ef4444', desc: 'Gmail is primary account & recovery for all services' },
+  { name: 'Financial Data Risk',   icon: '🏦', score: 30, color: '#f97316', desc: 'Banking apps share device & behavioral data via SDKs' },
+  { name: 'Location Data Risk',    icon: '📍', score: 25, color: '#ef4444', desc: 'Google Maps + WhatsApp + Instagram track location' },
+  { name: 'Shopping Data Risk',    icon: '🛒', score: 45, color: '#f59e0b', desc: 'Occasional shopping still builds purchase behavior profile' },
+  { name: 'Identity Exposure',     icon: '🪪', score: 28, color: '#ef4444', desc: 'PAN/Aadhaar linked to banking apps + KYC databases' },
+  { name: 'Professional Exposure', icon: '💼', score: 40, color: '#f59e0b', desc: 'LinkedIn + GitHub create detailed career & skills profile' },
+  { name: 'Device & Tech Fingerprint', icon: '📲', score: 35, color: '#f97316', desc: 'Android device ID shared across apps via Google Play Services' },
+];
+
+const HEATMAP_PLATFORMS = [
+  { name: 'Google',     icon: '🔍', pct: 97, level: 'critical', tip: 'Search, Gmail, Maps, Drive, YouTube — total surveillance' },
+  { name: 'Meta/WA',   icon: '📱', pct: 91, level: 'critical', tip: 'WhatsApp metadata + Instagram cross-platform tracking' },
+  { name: 'LinkedIn',  icon: '💼', pct: 78, level: 'high',     tip: 'Career, education, location, connections, job searches' },
+  { name: 'GitHub',    icon: '💻', pct: 65, level: 'high',     tip: 'Code, activity patterns, email, projects, collaborators' },
+  { name: 'Banks',     icon: '🏦', pct: 82, level: 'critical', tip: 'Financial behaviour, location, device, spending patterns' },
+  { name: 'Instagram', icon: '📸', pct: 74, level: 'high',     tip: 'Interests, social graph, location, browsing via pixel' },
+  { name: 'NPCI/UPI',  icon: '💳', pct: 60, level: 'high',     tip: 'All UPI transactions, merchant data, phone number' },
+  { name: 'Govt DBs',  icon: '🏛️', pct: 55, level: 'medium',  tip: 'Aadhaar, PAN, DigiLocker — identity anchors' },
+];
+
+const DATA_TAGS = [
+  { label: 'Full Name', color: '#ef4444' },
+  { label: 'Email Address', color: '#ef4444' },
+  { label: 'Phone Number', color: '#ef4444' },
+  { label: 'Location History', color: '#ef4444' },
+  { label: 'Financial Behaviour', color: '#f97316' },
+  { label: 'Browsing History', color: '#f97316' },
+  { label: 'Device Fingerprint', color: '#f97316' },
+  { label: 'Photos & Media', color: '#f59e0b' },
+  { label: 'Social Graph', color: '#f59e0b' },
+  { label: 'Search Queries', color: '#ef4444' },
+  { label: 'Career Profile', color: '#f59e0b' },
+  { label: 'App Usage Patterns', color: '#f97316' },
+  { label: 'Purchase History', color: '#f59e0b' },
+  { label: 'IP Address', color: '#f97316' },
+  { label: 'Biometric (Face ID)', color: '#ef4444' },
+  { label: 'Political Interests', color: '#a855f7' },
+  { label: 'Relationship Status', color: '#a855f7' },
+  { label: 'Sleep Patterns (WA online)', color: '#f59e0b' },
+];
+
+const COMPANIES = [
+  { name: 'Google LLC', icon: '🔍', bg: '#4285f420', color: '#4285f4', risk: 'CRITICAL', score: 97, data: 'Search, email, location, videos, calendar, contacts, drive, ads profile' },
+  { name: 'Meta Platforms', icon: '🟦', bg: '#1877f220', color: '#1877f2', risk: 'CRITICAL', score: 91, data: 'WhatsApp metadata, Instagram profile, contact graph, behavioral targeting' },
+  { name: 'NPCI / UPI Partners', icon: '💳', bg: '#22c55e20', color: '#22c55e', risk: 'CRITICAL', score: 82, data: 'All transaction data, merchant history, phone-linked financial identity' },
+  { name: 'Your Bank(s)', icon: '🏦', bg: '#f59e0b20', color: '#f59e0b', risk: 'HIGH', score: 80, data: 'Account data, KYC docs, spending patterns, device fingerprint via app SDKs' },
+  { name: 'Microsoft', icon: '🪟', bg: '#00a4ef20', color: '#00a4ef', risk: 'HIGH', score: 72, data: 'LinkedIn profile, connections, job searches, GitHub (owned by MS)' },
+  { name: 'Amazon India', icon: '📦', bg: '#ff9900' + '20', color: '#ff9900', risk: 'MEDIUM', score: 58, data: 'Purchase history, browsing, payment methods, delivery addresses' },
+  { name: 'Govt of India (UIDAI)', icon: '🏛️', bg: '#ef444420', color: '#ef4444', risk: 'HIGH', score: 68, data: 'Aadhaar biometrics, PAN, address, date of birth — immutable identity' },
+  { name: 'Apple / Android (Google)', icon: '📱', bg: '#a855f720', color: '#a855f7', risk: 'HIGH', score: 75, data: 'Device ID, app usage, location via OS, crash reports, contact list' },
+  { name: 'Telecom (Jio/BSNL)', icon: '📡', bg: '#38bdf820', color: '#38bdf8', risk: 'MEDIUM', score: 62, data: 'Call records, SMS, data usage, real-time location via cell tower' },
+  { name: 'Data Brokers (Acxiom etc.)', icon: '🕸️', bg: '#ec489920', color: '#ec4899', risk: 'HIGH', score: 70, data: 'Aggregated profile: name, age, education, income estimate, interests' },
+];
+
+const TWIN_DATA = [
+  {
+    label: '👤 DEMOGRAPHIC PROFILE',
+    color: '#38bdf8',
+    items: [
+      { key: 'Full Name', val: 'Syed Motahir Hasan' },
+      { key: 'Age', val: '22 years old' },
+      { key: 'Gender', val: 'Male (inferred)' },
+      { key: 'Religion', val: 'Muslim (name inference)' },
+      { key: 'Education', val: 'MCA Final Year, CS background' },
+      { key: 'City', val: 'Gorakhpur, Uttar Pradesh, India' },
+      { key: 'Income Range', val: 'Low–Medium (student)' },
+      { key: 'Language', val: 'Hindi + English' },
+    ]
+  },
+  {
+    label: '💼 PROFESSIONAL & CAREER',
+    color: '#a855f7',
+    items: [
+      { key: 'Current Role', val: 'Student (final year)' },
+      { key: 'Skills Known', val: 'Programming, MCA curriculum' },
+      { key: 'GitHub Activity', val: 'Active developer' },
+      { key: 'Job Seeking', val: 'Likely (graduation soon)' },
+      { key: 'LinkedIn Status', val: 'Active profile, networking' },
+      { key: 'Recruiter Target', val: 'Yes — entry-level tech roles' },
+      { key: 'Tech Stack (inferred)', val: 'From GitHub repos' },
+    ]
+  },
+  {
+    label: '🛒 BEHAVIOURAL PROFILE',
+    color: '#f59e0b',
+    items: [
+      { key: 'Shopping Frequency', val: 'Occasional, budget-conscious' },
+      { key: 'App Usage', val: 'Heavy WhatsApp, Instagram' },
+      { key: 'Active Hours', val: 'Late night (student pattern)' },
+      { key: 'Payment Preference', val: 'UPI / Digital (inferred)' },
+      { key: 'Content Interests', val: 'Tech, coding, education' },
+      { key: 'Political Lean', val: 'Unknown (not public)' },
+      { key: 'Ad Segments', val: '20+ advertising categories' },
+    ]
+  },
+  {
+    label: '⚠️ RISK FLAGS ON FILE',
+    color: '#ef4444',
+    items: [
+      { key: 'Data Breaches', val: 'Likely 1–3 (HaveIBeenPwned)' },
+      { key: 'Password Reuse', val: 'High probability (avg user)' },
+      { key: '2FA Enabled', val: 'Unknown — likely not all' },
+      { key: 'VPN Usage', val: 'Not detected' },
+      { key: 'Dark Web Exposure', val: 'Email likely indexed' },
+      { key: 'Phishing Risk', val: 'HIGH — tech student profile' },
+      { key: 'ID Theft Risk Score', val: 'Medium-High' },
+    ]
+  }
+];
+
+const RADAR_DATA = [
+  { label: 'Identity\nExposure',    you: 82, avg: 55, safe: 20 },
+  { label: 'Financial\nRisk',       you: 70, avg: 48, safe: 15 },
+  { label: 'Location\nTracking',    you: 75, avg: 60, safe: 20 },
+  { label: 'Social Media\nRisk',    you: 80, avg: 65, safe: 25 },
+  { label: 'Professional\nExposure',you: 60, avg: 40, safe: 15 },
+  { label: 'Email\nVulnerability',  you: 78, avg: 50, safe: 20 },
+  { label: 'Device\nTracking',      you: 65, avg: 55, safe: 20 },
+  { label: 'Data Broker\nExposure', you: 70, avg: 45, safe: 10 },
+];
+
+const ASSETS = [
+  { name: 'Banking Credentials',     icon: '🏦', bg: 'rgba(34,197,94,0.1)',   desc: 'Login + account data — highest dark web value',     price: '₹8,200', unit: 'per set' },
+  { name: 'Aadhaar / PAN Details',   icon: '🪪', bg: 'rgba(239,68,68,0.1)',   desc: 'Indian identity docs fetch premium on fraud markets', price: '₹3,500', unit: 'per record' },
+  { name: 'Gmail Account Access',    icon: '📧', bg: 'rgba(245,158,11,0.1)',  desc: 'With recovery access; enables account takeovers',    price: '₹2,100', unit: 'per account' },
+  { name: 'UPI Transaction History', icon: '💳', bg: 'rgba(168,85,247,0.1)',  desc: 'Financial behaviour data for fraud targeting',       price: '₹1,400', unit: 'per year' },
+  { name: 'Location History (1yr)',   icon: '📍', bg: 'rgba(56,189,248,0.1)', desc: 'Where you live, work, travel — full pattern',        price: '₹900',  unit: 'per export' },
+  { name: 'Social Media Profile',    icon: '📱', bg: 'rgba(236,72,153,0.1)',  desc: 'Combined IG + LinkedIn profile for targeted ads',    price: '₹650',  unit: 'per year' },
+  { name: 'Phone Number + Contacts', icon: '📞', bg: 'rgba(249,115,22,0.1)', desc: 'Used for SIM swap attacks and spam campaigns',       price: '₹420',  unit: 'per list' },
+  { name: 'Browsing & Search Data',  icon: '🔍', bg: 'rgba(56,189,248,0.08)','desc': 'Search intent reveals health, politics, finances',  price: '₹380',  unit: 'per 6 months' },
+];
+
+const DONUT_DATA = [
+  { label: 'Ad Targeting',    pct: 38, color: '#3b82f6' },
+  { label: 'Analytics Sale',  pct: 24, color: '#a855f7' },
+  { label: 'Credit Scoring',  pct: 15, color: '#f59e0b' },
+  { label: 'Data Brokering',  pct: 13, color: '#ef4444' },
+  { label: 'Product Dev',     pct: 10, color: '#22c55e' },
+];
+
+const ACTIONS = [
+  { name: 'Enable 2FA on Gmail',         desc: 'Use Google Authenticator app, not SMS',         boost: 8,  priority: 'P0', checked: false },
+  { name: 'Audit GitHub Repos',          desc: 'Remove API keys, .env files, sensitive configs', boost: 5,  priority: 'P0', checked: false },
+  { name: 'Use ProtonMail as secondary', desc: 'Separate email for sensitive accounts',          boost: 6,  priority: 'P1', checked: false },
+  { name: 'Enable WhatsApp privacy',     desc: 'Set Last Seen, Profile Pic to Contacts only',   boost: 4,  priority: 'P1', checked: false },
+  { name: 'Install a VPN',               desc: 'Use Proton VPN or Mullvad — hide IP & ISP',     boost: 7,  priority: 'P1', checked: false },
+  { name: 'Use a password manager',      desc: 'Bitwarden (free) — unique passwords per site',  boost: 9,  priority: 'P0', checked: false },
+  { name: 'Revoke unused app permissions', desc: 'Location, mic, camera on apps you rarely use', boost: 5,  priority: 'P2', checked: false },
+  { name: 'Check HaveIBeenPwned',        desc: 'See which breaches include your email',         boost: 3,  priority: 'P0', checked: false },
+  { name: 'Switch to Firefox + uBlock', desc: 'Block trackers and ads at browser level',        boost: 6,  priority: 'P2', checked: false },
+  { name: 'Lock LinkedIn profile',       desc: 'Limit visibility to connections only',          boost: 4,  priority: 'P2', checked: false },
+];
+
+const TOP_ACTIONS = [
+  { num: '01', icon: '🔐', name: 'Enable 2FA Everywhere', tag: 'DO TODAY', color: '#ef4444' },
+  { num: '02', icon: '🔑', name: 'Use Password Manager', tag: 'DO TODAY', color: '#ef4444' },
+  { num: '03', icon: '💻', name: 'Audit GitHub Repos', tag: 'THIS WEEK', color: '#f59e0b' },
+  { num: '04', icon: '🛡️', name: 'Install VPN', tag: 'THIS WEEK', color: '#f59e0b' },
+  { num: '05', icon: '📧', name: 'Get ProtonMail', tag: 'THIS MONTH', color: '#38bdf8' },
+];
+
+const LONGTERM = [
+  { icon: '🔒', title: 'Self-Host a Password Manager', desc: 'Vaultwarden on a cheap VPS. Zero trust for credential storage. Cost: ₹300/month.' },
+  { icon: '📵', title: 'De-Google Gradually', desc: 'Replace Search with DuckDuckGo, Maps with OsmAnd, Drive with ProtonDrive or Nextcloud.' },
+  { icon: '🏗️', title: 'Separate Identity Compartments', desc: 'Work email ≠ personal email ≠ shopping email. Prevents cross-platform tracking.' },
+  { icon: '📱', title: 'Audit Android Permissions', desc: 'Monthly audit of location, camera, mic permissions. Revoke anything not actively needed.' },
+  { icon: '🕵️', title: 'Monitor Dark Web Exposure', desc: 'Set up alerts on HaveIBeenPwned for your email. Subscribe to breach notifications.' },
+  { icon: '🎓', title: 'Build Privacy Into Your Career', desc: 'As an MCA grad, learning OWASP, GDPR, and privacy-by-design makes you more employable.' },
+];
+
+/* ═══════════════════════════════════════════════════
+   RENDER FUNCTIONS
+═══════════════════════════════════════════════════ */
+
+// 1. Animated ring
+function animateRing() {
+  const circumference = 2 * Math.PI * 82; // 515.2
+  const score = 34;
+  const fill = document.getElementById('mainRingFill');
+  const num = document.getElementById('mainScore');
+  fill.style.strokeDasharray = circumference;
+  fill.style.strokeDashoffset = circumference;
+  setTimeout(() => {
+    fill.style.transition = 'stroke-dashoffset 2s cubic-bezier(0.4,0,0.2,1)';
+    fill.style.strokeDashoffset = circumference - (score / 100) * circumference;
+    let count = 0;
+    const interval = setInterval(() => {
+      count++;
+      num.textContent = count;
+      if (count >= score) clearInterval(interval);
+    }, 50);
+  }, 400);
+}
+
+// 2. Privacy bars
+function renderPrivacyBars() {
+  const el = document.getElementById('privacyBars');
+  el.innerHTML = PRIVACY_BARS.map(b => `
+    <div class="privacy-row">
+      <div class="privacy-icon" style="background:${b.color}18;">${b.icon}</div>
+      <div class="privacy-info" data-tip="${b.desc}">
+        <div class="privacy-name">${b.name}</div>
+        <div class="privacy-desc">${b.desc.substring(0, 52)}…</div>
+      </div>
+      <div class="privacy-score-wrap">
+        <div class="bar-track">
+          <div class="bar-fill" data-width="${b.score}" style="background:${b.color};"></div>
+        </div>
+        <div class="privacy-val" style="color:${b.color};">${b.score}</div>
+      </div>
+    </div>
+  `).join('');
+  setTimeout(() => {
+    document.querySelectorAll('.bar-fill').forEach(b => {
+      b.style.width = b.dataset.width + '%';
+    });
+  }, 600);
+}
+
+// 3. Heatmap
+function renderHeatmap() {
+  const grid = document.getElementById('heatmapGrid');
+  grid.innerHTML = HEATMAP_PLATFORMS.map(p => `
+    <div class="heatmap-platform heat-${p.level}" data-tip="${p.tip}">
+      <div class="heatmap-icon">${p.icon}</div>
+      <div class="heatmap-name" style="color:var(--text-secondary);">${p.name}</div>
+      <div class="heatmap-pct" style="color:${p.level==='critical'?'#ef4444':p.level==='high'?'#f97316':p.level==='medium'?'#f59e0b':'#22c55e'};">${p.pct}%</div>
+    </div>
+  `).join('');
+
+  const cats = document.getElementById('dataCategories');
+  cats.innerHTML = DATA_TAGS.map(t => `
+    <span class="data-tag" style="background:${t.color}15;border:1px solid ${t.color}35;color:${t.color};">${t.label}</span>
+  `).join('');
+}
+
+// 4. Company list
+function renderCompanies() {
+  const el = document.getElementById('companyList');
+  el.innerHTML = COMPANIES.map((c, i) => `
+    <div class="company-row" onclick="this.style.background='rgba(255,255,255,0.03)'">
+      <div class="rank-num" style="color:${i<3?'var(--accent-amber)':'var(--text-muted)'};">${String(i+1).padStart(2,'0')}</div>
+      <div class="company-logo" style="background:${c.bg};">${c.icon}</div>
+      <div class="company-info">
+        <div class="company-name">
+          ${c.name}
+          <span class="risk-badge ${c.risk==='CRITICAL'?'risk-high':c.risk==='HIGH'?'risk-medium':'risk-low'}" style="font-size:8px;padding:2px 8px;">${c.risk}</span>
+        </div>
+        <div class="company-data">${c.data}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;min-width:110px;">
+        <div class="company-score" style="color:${c.score>80?'#ef4444':c.score>60?'#f59e0b':'#22c55e'};">${c.score}</div>
+        <div class="company-bar">
+          <div class="company-bar-fill" data-width="${c.score}" style="background:${c.score>80?'#ef4444':c.score>60?'#f59e0b':'#22c55e'};"></div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  setTimeout(() => {
+    document.querySelectorAll('.company-bar-fill').forEach(b => { b.style.width = b.dataset.width + '%'; });
+  }, 800);
+}
+
+// 5. Digital Twin
+function renderTwin() {
+  const el = document.getElementById('twinGrid');
+  el.innerHTML = TWIN_DATA.map(cat => `
+    <div class="twin-category">
+      <div class="twin-cat-label" style="color:${cat.color};">
+        <span>${cat.label}</span>
+      </div>
+      ${cat.items.map(item => `
+        <div class="twin-item">
+          <div class="twin-dot" style="background:${cat.color};"></div>
+          <div class="twin-key">${item.key}</div>
+          <div class="twin-val">${item.val}</div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+// 6. Radar Chart
+function renderRadar() {
+  const svg = document.getElementById('radarChart');
+  const cx = 210, cy = 195, r = 140;
+  const n = RADAR_DATA.length;
+
+  function pt(val, i) {
+    const angle = (i / n) * 2 * Math.PI - Math.PI / 2;
+    const scale = val / 100;
+    return { x: cx + r * scale * Math.cos(angle), y: cy + r * scale * Math.sin(angle) };
+  }
+
+  // Grid circles
+  let html = '';
+  [20, 40, 60, 80, 100].forEach(lvl => {
+    const pts = RADAR_DATA.map((_, i) => {
+      const p = pt(lvl, i);
+      return `${p.x},${p.y}`;
+    }).join(' ');
+    html += `<polygon points="${pts}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>`;
+    html += `<text x="${cx}" y="${cy - r*(lvl/100) - 4}" fill="rgba(255,255,255,0.2)" font-family="JetBrains Mono" font-size="9" text-anchor="middle">${lvl}</text>`;
+  });
+
+  // Axes
+  RADAR_DATA.forEach((_, i) => {
+    const p = pt(100, i);
+    html += `<line x1="${cx}" y1="${cy}" x2="${p.x}" y2="${p.y}" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>`;
+  });
+
+  // Safe threshold polygon (20)
+  const safePts = RADAR_DATA.map((d, i) => { const p = pt(d.safe, i); return `${p.x},${p.y}`; }).join(' ');
+  html += `<polygon points="${safePts}" fill="rgba(34,197,94,0.08)" stroke="rgba(34,197,94,0.4)" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+
+  // Avg polygon
+  const avgPts = RADAR_DATA.map((d, i) => { const p = pt(d.avg, i); return `${p.x},${p.y}`; }).join(' ');
+  html += `<polygon points="${avgPts}" fill="rgba(56,189,248,0.08)" stroke="rgba(56,189,248,0.4)" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+
+  // Your polygon
+  const youPts = RADAR_DATA.map((d, i) => { const p = pt(d.you, i); return `${p.x},${p.y}`; }).join(' ');
+  html += `<polygon points="${youPts}" fill="rgba(239,68,68,0.12)" stroke="rgba(239,68,68,0.8)" stroke-width="2"/>`;
+
+  // Dots
+  RADAR_DATA.forEach((d, i) => {
+    const p = pt(d.you, i);
+    html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#ef4444" stroke="rgba(239,68,68,0.4)" stroke-width="6"/>`;
+  });
+
+  // Labels
+  RADAR_DATA.forEach((d, i) => {
+    const angle = (i / n) * 2 * Math.PI - Math.PI / 2;
+    const labelR = r + 30;
+    const lx = cx + labelR * Math.cos(angle);
+    const ly = cy + labelR * Math.sin(angle);
+    const lines = d.label.split('\n');
+    const anchor = lx < cx - 5 ? 'end' : lx > cx + 5 ? 'start' : 'middle';
+    lines.forEach((line, li) => {
+      html += `<text x="${lx}" y="${ly + li * 13 - (lines.length-1)*6}" fill="rgba(255,255,255,0.7)" font-family="JetBrains Mono" font-size="10" text-anchor="${anchor}" letter-spacing="0.3">${line}</text>`;
+    });
+  });
+
+  svg.innerHTML = html;
+}
+
+// 7. Assets
+function renderAssets() {
+  const el = document.getElementById('assetList');
+  el.innerHTML = ASSETS.map((a, i) => `
+    <div class="asset-card">
+      <div class="asset-rank">${String(i+1).padStart(2,'0')}</div>
+      <div class="asset-icon" style="background:${a.bg};">${a.icon}</div>
+      <div class="asset-info">
+        <div class="asset-name">${a.name}</div>
+        <div class="asset-desc">${a.desc}</div>
+      </div>
+      <div class="asset-value">
+        <div class="asset-price">${a.price}</div>
+        <div class="asset-unit">${a.unit}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// 7b. Donut chart
+function renderDonut() {
+  const svg = document.getElementById('donutChart');
+  const cx = 150, cy = 120, outer = 80, inner = 52;
+  let startAngle = -Math.PI / 2;
+  let html = '';
+
+  DONUT_DATA.forEach(seg => {
+    const angle = (seg.pct / 100) * 2 * Math.PI;
+    const end = startAngle + angle;
+    const x1 = cx + outer * Math.cos(startAngle);
+    const y1 = cy + outer * Math.sin(startAngle);
+    const x2 = cx + outer * Math.cos(end);
+    const y2 = cy + outer * Math.sin(end);
+    const ix1 = cx + inner * Math.cos(end);
+    const iy1 = cy + inner * Math.sin(end);
+    const ix2 = cx + inner * Math.cos(startAngle);
+    const iy2 = cy + inner * Math.sin(startAngle);
+    const large = angle > Math.PI ? 1 : 0;
+    const midAngle = startAngle + angle / 2;
+    const lx = cx + (outer + 16) * Math.cos(midAngle);
+    const ly = cy + (outer + 16) * Math.sin(midAngle);
+
+    html += `<path d="M${x1},${y1} A${outer},${outer} 0 ${large},1 ${x2},${y2} L${ix1},${iy1} A${inner},${inner} 0 ${large},0 ${ix2},${iy2} Z"
+      fill="${seg.color}" opacity="0.85" stroke="var(--bg-card)" stroke-width="2"/>`;
+    if (seg.pct > 8) {
+      html += `<text x="${lx}" y="${ly}" fill="white" font-family="JetBrains Mono" font-size="9" text-anchor="middle" dominant-baseline="middle">${seg.pct}%</text>`;
+    }
+    startAngle = end;
+  });
+
+  // Centre text
+  html += `<text x="${cx}" y="${cy-8}" fill="rgba(255,255,255,0.9)" font-family="Syne,sans-serif" font-size="22" font-weight="800" text-anchor="middle">₹4,800</text>`;
+  html += `<text x="${cx}" y="${cy+10}" fill="rgba(255,255,255,0.4)" font-family="JetBrains Mono" font-size="9" text-anchor="middle" letter-spacing="1">YEARLY VALUE</text>`;
+
+  // Legend
+  let ly2 = 220;
+  DONUT_DATA.forEach(seg => {
+    const lx2 = 10 + DONUT_DATA.indexOf(seg) * 58;
+    html += `<rect x="${lx2}" y="${ly2}" width="10" height="10" rx="2" fill="${seg.color}"/>`;
+    html += `<text x="${lx2+14}" y="${ly2+9}" fill="rgba(255,255,255,0.5)" font-family="JetBrains Mono" font-size="9">${seg.label}</text>`;
+  });
+
+  svg.innerHTML = html;
+}
+
+// 8. Privacy Simulator
+let baseScore = 34;
+function renderActions() {
+  const el = document.getElementById('actionList');
+  el.innerHTML = ACTIONS.map((a, i) => `
+    <div class="action-item" onclick="toggleAction(${i})">
+      <div class="action-checkbox ${a.checked ? 'checked' : ''}" id="chk-${i}"></div>
+      <div class="action-info">
+        <div class="action-name">${a.name}</div>
+        <div class="action-desc">${a.desc}</div>
+        <div class="action-boost">+${a.boost} points if completed</div>
+      </div>
+      <span class="risk-badge ${a.priority==='P0'?'risk-high':a.priority==='P1'?'risk-medium':'risk-low'}" style="font-size:8px;padding:2px 8px;flex-shrink:0;">${a.priority}</span>
+    </div>
+  `).join('');
+  updateSimScore();
+}
+
+function toggleAction(i) {
+  ACTIONS[i].checked = !ACTIONS[i].checked;
+  const chk = document.getElementById(`chk-${i}`);
+  chk.classList.toggle('checked', ACTIONS[i].checked);
+  updateSimScore();
+}
+
+function updateSimScore() {
+  const boost = ACTIONS.filter(a => a.checked).reduce((s, a) => s + a.boost, 0);
+  const newScore = Math.min(100, baseScore + boost);
+  document.getElementById('simScore').textContent = newScore;
+  document.getElementById('simMeterFill').style.width = newScore + '%';
+
+  if (boost === 0) {
+    document.getElementById('simBoost').textContent = 'Select actions above to improve your score';
+    document.getElementById('simBoost').style.color = 'var(--text-muted)';
+  } else {
+    document.getElementById('simBoost').textContent = `+${boost} points from ${ACTIONS.filter(a=>a.checked).length} selected action${ACTIONS.filter(a=>a.checked).length>1?'s':''}`;
+    document.getElementById('simBoost').style.color = 'var(--accent-green)';
+  }
+}
+
+// 9. Final Verdict
+function renderVerdict() {
+  const el = document.getElementById('topActions');
+  el.innerHTML = TOP_ACTIONS.map(a => `
+    <div class="action-tile">
+      <div class="action-tile-num">${a.num}</div>
+      <div class="action-tile-icon">${a.icon}</div>
+      <div class="action-tile-name">${a.name}</div>
+      <div class="action-tile-tag" style="color:${a.color};">${a.tag}</div>
+    </div>
+  `).join('');
+
+  const lt = document.getElementById('longtermGrid');
+  lt.innerHTML = LONGTERM.map(l => `
+    <div class="longterm-item">
+      <div class="longterm-icon">${l.icon}</div>
+      <div class="longterm-title">${l.title}</div>
+      <div class="longterm-desc">${l.desc}</div>
+    </div>
+  `).join('');
+}
+
+/* ═══════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  animateRing();
+  renderPrivacyBars();
+  renderHeatmap();
+  renderCompanies();
+  renderTwin();
+  renderRadar();
+  renderAssets();
+  renderDonut();
+  renderActions();
+  renderVerdict();
+});
+</script>
+</body>
+</html>
